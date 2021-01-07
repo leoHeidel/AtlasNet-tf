@@ -1,10 +1,10 @@
 import os
-os.environ["PYOPENGL_PLATFORM"] = "egl"
-import numpy as np
-import trimesh
-import pyrender
 
-import dataset
+os.environ["PYOPENGL_PLATFORM"] = "egl"
+
+import numpy as np
+import pyrender
+import trimesh
 
 def render(obj_path, camera_mat, return_depth=False):
     fuze_trimesh = trimesh.load(obj_path)
