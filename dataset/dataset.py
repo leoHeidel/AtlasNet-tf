@@ -11,7 +11,7 @@ import trimesh
 
 import dataset
 
-def make_dataset(input_path, output_path, size=128, nb_points=100000, number_models=None, nb_samples_per_model=20):
+def make_dataset(input_path, output_path, size=128, nb_points=10000, number_models=None, nb_samples_per_model=20, gl_tries=5):
     dataset.utils.make_dir(output_path)
     objects_path = os.path.join(input_path, "*/models/*.obj")
     objects_path = glob.glob(objects_path)
@@ -33,11 +33,15 @@ def make_dataset(input_path, output_path, size=128, nb_points=100000, number_mod
             image_path = os.path.join(object_dir, render_name + ".jpg") 
             mat_path = os.path.join(object_dir, render_name + ".pkl") 
             mat = dataset.geometry.random_camera()
-            try:
-                color = dataset.rendering.render(path, mat)
-            except OpenGL.error.GLError:
-                print("GL Error occured, trying again.")
-                color = dataset.rendering.render(path, mat)
+            
+            for i in range(gl_tries):
+                try:
+                    color = dataset.rendering.render(path, mat, im_size=size)
+                    break
+                except OpenGL.error.GLError:
+                    print(f"GL Error occured, try {i}, trying again.")
+            else:
+                color = dataset.rendering.render(path, mat, im_size=size)
             
             im = Image.fromarray(color)
             im.save(image_path)

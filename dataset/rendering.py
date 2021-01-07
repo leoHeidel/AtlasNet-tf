@@ -6,7 +6,7 @@ import numpy as np
 import pyrender
 import trimesh
 
-def render(obj_path, camera_mat, return_depth=False):
+def render(obj_path, camera_mat, return_depth=False, im_size=128):
     fuze_trimesh = trimesh.load(obj_path)
     if type(fuze_trimesh) == trimesh.base.Trimesh:
         m = pyrender.Mesh.from_trimesh(fuze_trimesh)
@@ -30,7 +30,7 @@ def render(obj_path, camera_mat, return_depth=False):
         [0,0,0,1]
     ], dtype=np.float32)
     scene.add(light, pose=light_pose)
-    r = pyrender.OffscreenRenderer(512, 512)
+    r = pyrender.OffscreenRenderer(im_size, im_size)
     color, depth = r.render(scene)
     if return_depth:
         return color,depth
