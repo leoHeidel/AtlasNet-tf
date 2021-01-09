@@ -11,7 +11,7 @@ import trimesh
 
 import dataset
 
-def make_dataset(input_path, output_path, size=128, nb_points=10000, number_models=None, nb_samples_per_model=20, gl_tries=5):
+def make_dataset(input_path, output_path, size=128, nb_points=10000, number_models=None, overwrite=False, nb_samples_per_model=20, gl_tries=5):
     dataset.utils.make_dir(output_path)
     objects_path = os.path.join(input_path, "*/models/*.obj")
     objects_path = glob.glob(objects_path)
@@ -33,6 +33,10 @@ def make_dataset(input_path, output_path, size=128, nb_points=10000, number_mode
             image_path = os.path.join(object_dir, render_name + ".jpg") 
             mat_path = os.path.join(object_dir, render_name + ".pkl") 
             mat = dataset.geometry.random_camera()
+
+            if not overwrite and os.path.isfile(mat_path):
+                continue
+                
             
             for i in range(gl_tries):
                 try:
