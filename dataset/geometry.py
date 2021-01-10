@@ -27,8 +27,8 @@ def camera_around_center(theta=0, phi=np.pi/2, dist=0):
     camera[3,3] = 1
     return camera
     
-def random_camera(phi_min=np.pi*0.2, 
-                  phi_max=np.pi*0.6):
+def random_camera(phi_min=np.pi*0.1, 
+                  phi_max=np.pi*0.35):
     theta = np.random.uniform(-np.pi, np.pi)
     phi = np.random.uniform(phi_min, phi_max)
     return camera_around_center(theta, phi)
