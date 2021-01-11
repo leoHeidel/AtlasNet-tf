@@ -12,7 +12,10 @@ import trimesh
 
 import dataset
 
-def make_dataset(input_path, output_path, size=128, nb_points=10000, number_models=None, overwrite=False, nb_samples_per_model=20, gl_tries=5):
+def make_dataset(input_path, output_path, size=128, nb_points=10000, 
+                 number_models=None, overwrite=False, nb_samples_per_model=20, 
+                 gl_tries=5, fast_skip=False):
+    
     dataset.utils.make_dir(output_path)
     objects_path = os.path.join(input_path, "*/models/*.obj")
     objects_path = glob.glob(objects_path)
@@ -21,6 +24,8 @@ def make_dataset(input_path, output_path, size=128, nb_points=10000, number_mode
     for path in tqdm.tqdm(objects_path):
         name = path.split(os.path.sep)[-3]
         object_dir = os.path.join(output_path, name)
+        if fast_skip and os.path.isdir(object_dir):
+           continue 
         dataset.utils.make_dir(object_dir)
         pts_path = os.path.join(object_dir, "pts.pkl")
         pts = dataset.geometry.sample_points(path, nb=nb_points)
@@ -42,16 +47,23 @@ def make_dataset(input_path, output_path, size=128, nb_points=10000, number_mode
             for i in range(gl_tries):
                 try:
                     color = dataset.rendering.render(path, mat, im_size=size)
+                    im = Image.fromarray(color)
+                    im.save(image_path)
+                    with open(mat_path, 'wb') as handle:
+                        pickle.dump(mat, handle, protocol=pickle.HIGHEST_PROTOCOL)
                     break
                 except OpenGL.error.GLError:
                     print(f"GL Error occured, try {i}, trying again.")
+                except ValueError:
+                    print(f"Value error with {name}")
+                    break 
+                except TypeError:
+                    print(f"Type error with {name}")
+                    break 
             else:
-                color = dataset.rendering.render(path, mat, im_size=size)
+                pass
+                #color = dataset.rendering.render(path, mat, im_size=size)
             
-            im = Image.fromarray(color)
-            im.save(image_path)
-            with open(mat_path, 'wb') as handle:
-                pickle.dump(mat, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
                 
 def load_example(image_path, size, nb_points):
