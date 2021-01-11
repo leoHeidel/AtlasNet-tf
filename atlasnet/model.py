@@ -1,6 +1,6 @@
+from sklearn.neighbors import KDTree
 import tensorflow as tf
 import tensorflow.keras as keras
-
 
 def get_features_model(trainable=True, hidden_size=1024, pretrained_model=None):
     if pretrained_model == None:
