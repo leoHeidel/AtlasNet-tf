@@ -32,6 +32,7 @@ def render(obj_path, camera_mat, return_depth=False, im_size=128):
     scene.add(light, pose=light_pose)
     r = pyrender.OffscreenRenderer(im_size, im_size)
     color, depth = r.render(scene)
+    r.delete()
     if return_depth:
         return color,depth
     return color
