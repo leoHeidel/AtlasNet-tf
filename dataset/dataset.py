@@ -1,5 +1,5 @@
 import glob
-import pickle
+import pickle5 as pickle
 import os
 
 import numpy as np
@@ -56,6 +56,9 @@ def make_dataset(input_path, output_path, size=128, nb_points=10000,
                     print(f"GL Error occured, try {i}, trying again.")
                 except ValueError:
                     print(f"Value error with {name}")
+                    break 
+                except RuntimeError:
+                    print(f"Runtime error with {name}")
                     break 
                 except TypeError:
                     print(f"Type error with {name}")
